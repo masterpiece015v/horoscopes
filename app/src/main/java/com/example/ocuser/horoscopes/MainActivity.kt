@@ -3,6 +3,8 @@ package com.example.ocuser.horoscopes
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.*
 
 class MainActivity : AppCompatActivity() {
@@ -12,7 +14,12 @@ class MainActivity : AppCompatActivity() {
             "てんびん座" to R.drawable.libra,"さそり座" to R.drawable.scorpio,"いて座" to R.drawable.sagittarius,
             "やぎ座" to R.drawable.capricorn,"みずがめ座" to R.drawable.aquarius,"うお座" to R.drawable.pisces
     )
-
+    val horoMapEng = mapOf(
+            "おひつじ座" to "aries","おうし座" to "taurus","ふたご座" to "gemini",
+            "かに座" to "cancer","しし座" to "leo","おとめ座" to "virgo",
+            "てんびん座" to "libra","さそり座" to "scorpio","いて座" to "sagittarius",
+            "やぎ座" to "capricorn","みずがめ座" to "aquarius","うお座" to "pisces"
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,7 +57,14 @@ class MainActivity : AppCompatActivity() {
 
         //イメージクリックのイベント
         findViewById<ImageView>(R.id.imgHoro).setOnClickListener {
-            Toast.makeText(applicationContext,"test",Toast.LENGTH_SHORT).show()
+            /*
+            findViewById<WebView>(R.id.webHoro).webViewClient = WebViewClient()
+            findViewById<WebView>(R.id.webHoro).settings.javaScriptEnabled = true
+            val url = "https://fortune.yahoo.co.jp/12astro/" + horoMapEng[findViewById<Spinner>(R.id.spnHoroscopes).selectedItem.toString()]
+            findViewById<WebView>(R.id.webHoro).loadUrl( url )
+            Toast.makeText(applicationContext,findViewById<Spinner>(R.id.spnHoroscopes).selectedItem.toString() ,Toast.LENGTH_SHORT).show()
+            */
+
         }
 
     }
