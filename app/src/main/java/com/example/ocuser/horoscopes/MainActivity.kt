@@ -11,6 +11,10 @@ import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.io.BufferedInputStream
@@ -18,33 +22,41 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class MainActivity : AppCompatActivity() , LoaderManager.LoaderCallbacks<String>{
+data class AstroFortun(val rank : String, val score : String, val content : String )
 
-    val horoMap = mapOf(
+class MainActivity : AppCompatActivity(){
+    val horoImgMap = mapOf(
             "おひつじ座" to R.drawable.aries,"おうし座" to R.drawable.taurus,"ふたご座" to R.drawable.gemini,
             "かに座" to R.drawable.cancer,"しし座" to R.drawable.leo,"おとめ座" to R.drawable.virgo,
             "てんびん座" to R.drawable.libra,"さそり座" to R.drawable.scorpio,"いて座" to R.drawable.sagittarius,
             "やぎ座" to R.drawable.capricorn,"みずがめ座" to R.drawable.aquarius,"うお座" to R.drawable.pisces
     )
-    val horoMapEng = mapOf(
+    val horoEngMap = mapOf(
             "おひつじ座" to "aries","おうし座" to "taurus","ふたご座" to "gemini",
             "かに座" to "cancer","しし座" to "leo","おとめ座" to "virgo",
             "てんびん座" to "libra","さそり座" to "scorpio","いて座" to "sagittarius",
             "やぎ座" to "capricorn","みずがめ座" to "aquarius","うお座" to "pisces"
     )
+
+    lateinit var horoResMap :MutableMap<String,AstroFortun>
+
+    val horoList = listOf(
+            "おひつじ座", "おうし座", "ふたご座",
+            "かに座","しし座","おとめ座",
+            "てんびん座","さそり座","いて座",
+            "やぎ座", "みずがめ座", "うお座")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d("-----","onCreate()")
 
-        //loaderManager.initLoader(1,null,this)
+        //結果のマップを初期化
+        horoResMap = mutableMapOf()
+
         //スピナーに星座を登録する
         val spnHoroscopes = findViewById<Spinner>(R.id.spnHoroscopes)
-        val horoList = listOf(
-                "おひつじ座", "おうし座", "ふたご座",
-                "かに座","しし座","おとめ座",
-                "てんびん座","さそり座","いて座",
-                "やぎ座", "みずがめ座", "うお座")
+
         //アダプターの登録
         val adapter = ArrayAdapter<String>(
                 this,
@@ -52,115 +64,53 @@ class MainActivity : AppCompatActivity() , LoaderManager.LoaderCallbacks<String>
                 horoList
         )
         spnHoroscopes.adapter = adapter
+        horoEngMap.forEach{
+            val url = "https://fortune.yahoo.co.jp/12astro/${it.value}"
+            httpGet( url , it.key)
+        }
+
         //スピナー選択時のイベント
         spnHoroscopes.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
-
+            //星座を選ぶと画像が変わる
             override fun onItemSelected(parent:AdapterView<*>?, view: View?, position:Int, id:Long){
                 val spnParent = parent as Spinner
                 val item = spnParent.selectedItem as String
-                val imgId = horoMap[item]
+                val txtRank = findViewById(R.id.txtRank) as TextView
+                val txtScore = findViewById(R.id.txtScore) as TextView
+                val txtContent = findViewById( R.id.txtContent ) as TextView
+
+                val imgId = horoImgMap[item]
                 if( imgId != null) {
                     findViewById<ImageView>(R.id.imgHoro).setImageResource(imgId)
                 }
-                    //Toast.makeText(applicationContext,horoMap[item],Toast.LENGTH_SHORT).show()
-            }
-        }
-        //イメージクリックのイベント
-        findViewById<ImageView>(R.id.imgHoro).setOnClickListener {
-            supportLoaderManager.initLoader(1,null,this)
-            /*
-            findViewById<WebView>(R.id.webHoro).webViewClient = WebViewClient()
-            findViewById<WebView>(R.id.webHoro).settings.javaScriptEnabled = true
-            val url = "https://fortune.yahoo.co.jp/12astro/" + horoMapEng[findViewById<Spinner>(R.id.spnHoroscopes).selectedItem.toString()]
-            findViewById<WebView>(R.id.webHoro).loadUrl( url )
-            Toast.makeText(applicationContext,findViewById<Spinner>(R.id.spnHoroscopes).selectedItem.toString() ,Toast.LENGTH_SHORT).show()
-            */
 
-        }
-
-    }
-    //ローダーが破棄されるときに呼ばれるメソッド
-    override fun onLoaderReset(p0: Loader<String>) {
-        // To change body of created functions use File | Settings | File Templates.
-    }
-
-    //取得したデータを出力する
-    override fun onLoadFinished(p0: Loader<String>, p1: String?) {
-        if( p1 != null ) {
-            findViewById<TextView>(R.id.txtHtml).text = p1
-        }
-    }
-    //実行するローダーを生成して返す
-    override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<String> {
-        Log.d("-----","onCreateLoader()")
-        class HtmlLoader( context : Context) : AsyncTaskLoader<String>(context){
-            private var cache : String? = null
-            //バックグラウンド処理
-            override fun loadInBackground(): String? {
-                val res = httpGet("https://www.yahoo.co.jp")
-                Log.d("----","loadInBackground()")
+                val res = horoResMap[item]
                 if( res != null ){
-                    return res.toString()
+                    txtRank.text = res.rank
+                    txtScore.text = res.score
+                    txtContent.text = res.content
                 }
 
-                return null
-
             }
+        }
 
-            override fun deliverResult(data: String?) {
-                if( isReset || data == null ) return
-                cache = data
-                super.deliverResult(data)
-            }
+    }
 
-            override fun onStartLoading() {
-                if( cache != null ){
-                    deliverResult( cache )
-                }
-                if( takeContentChanged() || cache == null ){
-                    forceLoad()
-                }
-            }
+    //コルーチン
+    fun httpGet( url : String , key : String)  = GlobalScope.launch(Dispatchers.Main){
+        async(Dispatchers.Default){
+            val document = Jsoup.connect(url ).get()
 
-            override fun onStopLoading() {
-                cancelLoad()
-            }
+            val rank = document.select("#jumpdtl").select("strong").first().text()
+            val score = document.select(".bg01-03").select("p").first().text()
+            val content = document.select(".yftn12a-md48").first().text()
 
-            override fun onReset() {
-                super.onReset()
-                onStopLoading()
-                cache= null
-            }
-
-            fun httpGet( url : String) : Document?{
-                //val con = URL( url ).openConnection() as HttpURLConnection
-
-                /*con.apply{
-                    requestMethod = "GET"
-                    connectTimeout = 3000
-                    readTimeout = 5000
-                    instanceFollowRedirects = true
-                }*/
-
-                //con.connect()
-
-                val document = Jsoup.connect("https://www.yahoo.co.jp").get()
-
-                /*if( con.responseCode in 200..299 ){
-                    return BufferedInputStream( con.inputStream )
-                }*/
-                if( document != null ){
-                    return document
-                }
-                //失敗
-                return null
-            }
+            horoResMap.put(key , AstroFortun(rank,score,content) )
 
         }
-        val htmlLoader = HtmlLoader( this )
-        return htmlLoader
     }
+
 }
