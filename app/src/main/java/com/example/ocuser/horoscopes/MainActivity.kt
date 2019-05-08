@@ -1,36 +1,20 @@
 package com.example.ocuser.horoscopes
 
-import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.AsyncTaskLoader
-import android.support.v4.content.Loader
 import android.util.Log
 import android.view.View
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.io.BufferedInputStream
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
-data class AstroFortun(val rank : String, val score : String, val content : String )
+data class AstroFortun(val img : Int,  var rank : String, var score : String, var content : String )
 
 class MainActivity : AppCompatActivity(){
-    val horoImgMap = mapOf(
-            "おひつじ座" to R.drawable.aries,"おうし座" to R.drawable.taurus,"ふたご座" to R.drawable.gemini,
-            "かに座" to R.drawable.cancer,"しし座" to R.drawable.leo,"おとめ座" to R.drawable.virgo,
-            "てんびん座" to R.drawable.libra,"さそり座" to R.drawable.scorpio,"いて座" to R.drawable.sagittarius,
-            "やぎ座" to R.drawable.capricorn,"みずがめ座" to R.drawable.aquarius,"うお座" to R.drawable.pisces
-    )
+
     val horoEngMap = mapOf(
             "おひつじ座" to "aries","おうし座" to "taurus","ふたご座" to "gemini",
             "かに座" to "cancer","しし座" to "leo","おとめ座" to "virgo",
@@ -38,7 +22,20 @@ class MainActivity : AppCompatActivity(){
             "やぎ座" to "capricorn","みずがめ座" to "aquarius","うお座" to "pisces"
     )
 
-    lateinit var horoResMap :MutableMap<String,AstroFortun>
+    var horoMap :MutableMap<String,AstroFortun> = mutableMapOf(
+            "おひつじ座" to AstroFortun(R.drawable.aries,"","" ,""),
+            "おうし座" to AstroFortun( R.drawable.taurus,"","",""),
+            "ふたご座" to AstroFortun( R.drawable.gemini,"","",""),
+            "かに座" to AstroFortun( R.drawable.cancer,"","",""),
+            "しし座" to AstroFortun( R.drawable.leo,"","",""),
+            "おとめ座" to AstroFortun( R.drawable.virgo,"","",""),
+            "てんびん座" to AstroFortun( R.drawable.libra,"","",""),
+            "さそり座" to AstroFortun( R.drawable.scorpio, "","","" ),
+            "いて座" to AstroFortun(R.drawable.sagittarius, "","","" ),
+            "やぎ座" to AstroFortun( R.drawable.capricorn,"","",""),
+            "みずがめ座" to AstroFortun( R.drawable.aquarius,"","",""),
+            "うお座" to AstroFortun(R.drawable.pisces,"","","")
+    )
 
     val horoList = listOf(
             "おひつじ座", "おうし座", "ふたご座",
@@ -51,11 +48,9 @@ class MainActivity : AppCompatActivity(){
         setContentView(R.layout.activity_main)
         Log.d("-----","onCreate()")
 
-        //結果のマップを初期化
-        horoResMap = mutableMapOf()
 
         //スピナーに星座を登録する
-        val spnHoroscopes = findViewById<Spinner>(R.id.spnHoroscopes)
+        val spnHoroscopes = findViewById(R.id.spnHoroscopes) as Spinner
 
         //アダプターの登録
         val adapter = ArrayAdapter<String>(
@@ -82,13 +77,14 @@ class MainActivity : AppCompatActivity(){
                 val txtScore = findViewById(R.id.txtScore) as TextView
                 val txtContent = findViewById( R.id.txtContent ) as TextView
 
-                val imgId = horoImgMap[item]
-                if( imgId != null) {
-                    findViewById<ImageView>(R.id.imgHoro).setImageResource(imgId)
-                }
-
-                val res = horoResMap[item]
+                val res = horoMap[item]
                 if( res != null ){
+                    val imgId = res.img
+
+                    if( imgId != null) {
+                        findViewById<ImageView>(R.id.imgHoro).setImageResource(imgId)
+                    }
+
                     txtRank.text = res.rank
                     txtScore.text = res.score
                     txtContent.text = res.content
@@ -108,7 +104,13 @@ class MainActivity : AppCompatActivity(){
             val score = document.select(".bg01-03").select("p").first().text()
             val content = document.select(".yftn12a-md48").first().text()
 
-            horoResMap.put(key , AstroFortun(rank,score,content) )
+            val res = horoMap[key]
+
+            if( res != null ){
+                res.rank = rank
+                res.score = score
+                res.content = content
+            }
 
         }
     }
