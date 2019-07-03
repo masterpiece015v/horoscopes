@@ -18,9 +18,9 @@ class AstroAdapter(context: Context, val astroList : List<AstroFortun>,private v
         val viewHolder = AstroViewHolder(view)
 
         //リサイクラーをクリックしたときの処理
-        view.setOnClickListener{
-            onItemClicked(p1)
-        }
+        //view.setOnClickListener{
+        //    onItemClicked(p1)
+        //}
 
         return viewHolder
     }
@@ -31,12 +31,18 @@ class AstroAdapter(context: Context, val astroList : List<AstroFortun>,private v
         p0.imgAstor.setImageResource(astroList[p1].imgName)
         p0.txtAstroName.text = astroList[p1].rank
         p0.txtOverview.text = astroList[p1].title
+        p0.view.setOnClickListener{
+            onItemClicked(p1)
+        }
+
+
     }
 
 
-    class AstroViewHolder( view : View):RecyclerView.ViewHolder(view){
+    class AstroViewHolder(val view : View):RecyclerView.ViewHolder(view){
         val imgAstor = view.findViewById<ImageView>(R.id.imgAstro)
         val txtAstroName = view.findViewById<TextView>(R.id.txtAstroName)
         val txtOverview = view.findViewById<TextView>(R.id.txtOverview)
+
     }
 }

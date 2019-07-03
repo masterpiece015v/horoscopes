@@ -34,18 +34,25 @@ class MainActivity : AppCompatActivity(){
             AstroFortun("しし座","leo",R.drawable.leo,"","","","","","",""),
             AstroFortun("おとめ座","virgo",R.drawable.virgo,"","","","","","",""),
             AstroFortun("てんびん座","libra",R.drawable.libra,"","","","","","",""),
-            AstroFortun("さそし座","scorpio",R.drawable.scorpio,"","","","","","",""),
+            AstroFortun("さそり座","scorpio",R.drawable.scorpio,"","","","","","",""),
             AstroFortun("いて座","sagittarius",R.drawable.sagittarius,"","","","","","",""),
             AstroFortun("やぎ座","capricorn",R.drawable.capricorn,"","","","","","",""),
             AstroFortun("みずがめ座","aquarius",R.drawable.aquarius,"","","","","","",""),
             AstroFortun("うお座","pisces",R.drawable.pisces,"","","","","","","")
     )
 
-    lateinit var recyclerView : RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+        val recyclerView = findViewById<RecyclerView>(R.id.lstAstro)
+
+        //sqliteの作成
+        val dbastro = DbAstro( this )
+        dbastro.init()
+
         //シェアードプリファレンスから年月日を取得
         val pref = getSharedPreferences("date", Context.MODE_PRIVATE)
 
@@ -75,22 +82,63 @@ class MainActivity : AppCompatActivity(){
         }
         //Log.d( "debug", datetime.year.toString() )
 
-        //占いを取得する
-        //astroList.forEach{
-        //    val url = "https://fortune.yahoo.co.jp/12astro/${it.engName}"
-        //    httpGet( url , it )
-        //}
+        //日付が変わっていれば占いを取得する
+        if( changeFlg ) {
+            astroList.forEach {astro ->
+                val url = "https://fortune.yahoo.co.jp/12astro/${astro.engName}"
+                //httpGet(url, astro)
+                //コルーチン
+                GlobalScope.launch(Dispatchers.Main){
+                    async(Dispatchers.Default){
+                        val document = Jsoup.connect(url).get()
 
-        httpGet("https://fortune.yahoo.co.jp/12astro/aries" , astroList[0] )
+                        astro.rank = document.select("#jumpdtl").select("strong").first().text()
+                        astro.score = document.select(".bg01-03").select("p").first().text()
 
-        recyclerView = findViewById<RecyclerView>(R.id.lstAstro)
+                        val yftn12a = document.select(".yftn12a-md48")
+                        Log.d("debug","${yftn12a.size}")
+                        astro.title = yftn12a[0].select("dt").first().text()
+                        astro.content = yftn12a[0].select("dd").first().text()
+                        astro.charm = yftn12a[1].select("dd").first().text()
 
+                        val spans = document.select("span")
+                        //spans.forEachIndexed { index, element ->
+                        //    Log.d("debug","${index},${element.text()}")
+                        //}
+                        astro.compa1 = spans[4].text()
+                        astro.compa2 = spans[7].text()
+
+                        //Log.d("debug" , "${astro.charm},${astro.compa1},${astro.compa2}")
+
+                    }.await()
+                    //テーブルを更新する
+                    val valueMap = mutableMapOf<String,String>()
+                    valueMap["rank"] = astro.rank
+                    valueMap["score"] = astro.score
+                    valueMap["title"] = astro.title
+                    valueMap["content"] = astro.content
+                    valueMap["charm"] = astro.charm
+                    valueMap["compa1"] = astro.compa1
+                    valueMap["compa2"] = astro.compa2
+                    dbastro.update("astroTable","name=?",arrayOf<String>(astro.name),valueMap )
+
+                    //取得後リサイクラービューに再表示する
+                    recyclerView.adapter!!.notifyDataSetChanged()
+                }
+            }
+        }
+
+        //リサイクラービューのアダプタ
         val adapter = AstroAdapter(this,astroList){
+
+            Toast.makeText(this,"${it}",Toast.LENGTH_SHORT).show()
+
             //タップしたときのメソッド
             val intent = Intent(this,Main2Activity::class.java)
             intent.putExtra("name",astroList.get(it).name )
             intent.putExtra("content",astroList.get(it).content )
-            
+            intent.putExtra("imgName", astroList.get(it).imgName )
+
             startActivity( intent )
         }
 
@@ -98,31 +146,5 @@ class MainActivity : AppCompatActivity(){
         recyclerView.layoutManager = LinearLayoutManager(this,LinearLayout.VERTICAL,false)
     }
 
-    //コルーチン
-    fun httpGet( url : String , astro : AstroFortun)  = GlobalScope.launch(Dispatchers.Main){
-        async(Dispatchers.Default){
-            val document = Jsoup.connect(url).get()
-
-            astro.rank = document.select("#jumpdtl").select("strong").first().text()
-            astro.score = document.select(".bg01-03").select("p").first().text()
-
-            val yftn12a = document.select(".yftn12a-md48")
-            Log.d("debug","${yftn12a.size}")
-            astro.title = yftn12a[0].select("dt").first().text()
-            astro.content = yftn12a[0].select("dd").first().text()
-            astro.charm = yftn12a[1].select("dd").first().text()
-
-            val spans = document.select("span")
-            //spans.forEachIndexed { index, element ->
-            //    Log.d("debug","${index},${element.text()}")
-            //}
-            astro.compa1 = spans[4].text()
-            astro.compa2 = spans[7].text()
-
-            //Log.d("debug" , "${astro.charm},${astro.compa1},${astro.compa2}")
-        }.await()
-        //取得後リサイクラービューに再表示する
-        recyclerView.adapter!!.notifyDataSetChanged()
-    }
 
 }
