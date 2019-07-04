@@ -2,6 +2,7 @@ package com.example.ocuser.horoscopes
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.TextView
 
 class Main2Activity : AppCompatActivity() {
@@ -10,10 +11,13 @@ class Main2Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
-        val name = intent.getStringExtra("name")
-        findViewById<TextView>(R.id.txtName2).text = name
-        val content = intent.getStringExtra( "content")
-        findViewById<TextView>(R.id.txtContent2).text = content
+
+        val index = intent.getIntExtra("index",0)
+
+        findViewById<TextView>(R.id.txtName2).text = MainActivity.astroList[index].name
+        findViewById<TextView>(R.id.txtContent2).text = MainActivity.astroList[index].content
+        findViewById<ImageView>(R.id.imgHoro2).setImageResource( MainActivity.astroList[index].imgName )
 
     }
 }
+

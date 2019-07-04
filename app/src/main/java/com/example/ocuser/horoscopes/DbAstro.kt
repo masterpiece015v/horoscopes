@@ -2,6 +2,7 @@ package com.example.ocuser.horoscopes
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 
 class DbAstro(private val context : Context){
     val dbhepler = DbHelper( context )
@@ -52,7 +53,13 @@ class DbAstro(private val context : Context){
         val db = dbhepler.writableDatabase
 
         db.update( tableName, values,where,keyArray )
+    }
 
+    //カーソルの取得
+    fun getCursor( sql : String, array : Array<String> ):Cursor{
+        val db = dbhepler.writableDatabase
+        val cur = db.rawQuery(sql,array)
 
+        return cur
     }
 }

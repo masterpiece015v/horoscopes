@@ -35,14 +35,11 @@ class AstroAdapter(context: Context, val astroList : List<AstroFortun>,private v
             onItemClicked(p1)
         }
 
-
     }
-
 
     class AstroViewHolder(val view : View):RecyclerView.ViewHolder(view){
         val imgAstor = view.findViewById<ImageView>(R.id.imgAstro)
         val txtAstroName = view.findViewById<TextView>(R.id.txtAstroName)
         val txtOverview = view.findViewById<TextView>(R.id.txtOverview)
-
     }
 }
