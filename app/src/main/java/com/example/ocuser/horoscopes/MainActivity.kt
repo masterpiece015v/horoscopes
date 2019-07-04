@@ -50,12 +50,7 @@ class MainActivity : AppCompatActivity(),Fragment01.OnAstroSelectListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //val recyclerView = findViewById<RecyclerView>(R.id.lstAstro)
-
-        val pager = findViewById<ViewPager>(R.id.pager)
-        val fragmentManager = supportFragmentManager
-        val adapter = MyPageAdapter(fragmentManager)
-        pager.adapter = adapter
+        val recyclerView:RecyclerView  = findViewById(R.id.lstAstro)
 
         //sqliteの作成
         val dbastro = DbAstro( this )
@@ -92,8 +87,9 @@ class MainActivity : AppCompatActivity(),Fragment01.OnAstroSelectListener{
             }
             false
         }
-        Log.d( "debug", changeFlg.toString() )
-        Log.d( "debug" , "${oldYear}${dt.year}" )
+
+        //Log.d( "debug", changeFlg.toString() )
+        //Log.d( "debug" , "${oldYear}${dt.year}" )
         //日付が変わっていれば占いを取得する
         if( changeFlg ) {
             astroList.forEach {astro ->
@@ -158,18 +154,18 @@ class MainActivity : AppCompatActivity(),Fragment01.OnAstroSelectListener{
         }
 
         //リサイクラービューのアダプタ
-        //val adapter = AstroAdapter(this,astroList){
+        val adapter = AstroAdapter(this,astroList){
             //Toast.makeText(this,"${it}",Toast.LENGTH_SHORT).show()
             //タップしたときのメソッド
-         //   val intent = Intent(this,Main2Activity::class.java)
-         //   intent.putExtra("index", it )
+            val intent = Intent(this,Main2Activity::class.java)
+            intent.putExtra("index", it )
             //intent.putExtra("content",astroList.get(it).content )
             //intent.putExtra("imgName", astroList.get(it).imgName )
-         //   startActivity( intent )
-        //}
+            startActivity( intent )
+        }
 
-        //recyclerView.adapter = adapter
-        //recyclerView.layoutManager = LinearLayoutManager(this,LinearLayout.VERTICAL,false)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this,LinearLayout.VERTICAL,false)
     }
 
 
