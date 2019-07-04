@@ -13,6 +13,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 class Fragment01(): Fragment() {
+    interface OnAstroSelectListener{
+        fun onAstroSelected( index : Int )
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val layout = inflater?.inflate(R.layout.fragment01, container, false)
@@ -21,7 +24,7 @@ class Fragment01(): Fragment() {
 
         //リサイクラービューのアダプタ
         val adapter = AstroAdapter( context!! , MainActivity.astroList){
-
+            (context as OnAstroSelectListener).onAstroSelected( it )
         }
 
         recyclerView.adapter = adapter

@@ -31,6 +31,8 @@ class AstroAdapter(context: Context, val astroList : List<AstroFortun>,private v
         p0.imgAstor.setImageResource(astroList[p1].imgName)
         p0.txtAstroName.text = astroList[p1].rank
         p0.txtOverview.text = astroList[p1].title
+
+        //ビューがクリックされたとのイベント
         p0.view.setOnClickListener{
             onItemClicked(p1)
         }

@@ -17,7 +17,7 @@ import org.jsoup.Jsoup
 
 data class AstroFortun(val name : String,val engName : String ,val imgName : Int ,var rank : String,var score : String,var title : String,var content : String,var charm : String,var compa1:String, var compa2:String)
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(),Fragment01.OnAstroSelectListener{
 
     companion object{
         val astroList = listOf(
@@ -35,7 +35,17 @@ class MainActivity : AppCompatActivity(){
                 AstroFortun("うお座","pisces",R.drawable.pisces,"","","","","","","")
         )
     }
+    
+    //リストの項目をクリックしたときのイベント
+    override fun onAstroSelected(index: Int) {
 
+        val intent = Intent(this,Main2Activity::class.java)
+
+        intent.putExtra("index",index)
+
+        startActivity( intent )
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
