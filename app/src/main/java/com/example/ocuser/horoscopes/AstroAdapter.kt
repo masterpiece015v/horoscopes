@@ -17,11 +17,6 @@ class AstroAdapter(context: Context, val astroList : List<AstroFortun>,private v
         val view = inflater.inflate(R.layout.list_row,p0,false)
         val viewHolder = AstroViewHolder(view)
 
-        //リサイクラーをクリックしたときの処理
-        //view.setOnClickListener{
-        //    onItemClicked(p1)
-        //}
-
         return viewHolder
     }
 

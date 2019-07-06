@@ -8,16 +8,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 
-class Fragment01(): Fragment() {
+class Fragment03(): Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val layout = inflater?.inflate(R.layout.fragment01, container, false)
+        val layout = inflater?.inflate(R.layout.fragment03, container, false)
         val index = arguments!!.getInt("index")
 
-        layout.findViewById<TextView>(R.id.txtName1).text = "${MainActivity.astroList[index].name}の総合運"
-        layout.findViewById<TextView>(R.id.txtContent1).text = MainActivity.astroList[index].content
-        layout.findViewById<ImageView>(R.id.imgHoro1).setImageResource( MainActivity.astroList[index].imgName )
+        layout.findViewById<TextView>(R.id.txtName3).text = "${MainActivity.astroList[index].name}の金運"
+        layout.findViewById<TextView>(R.id.txtContent3).text = MainActivity.astroList[index].gold
+        layout.findViewById<ImageView>(R.id.imgHoro3).setImageResource( MainActivity.astroList[index].imgName )
         return layout
     }
 }

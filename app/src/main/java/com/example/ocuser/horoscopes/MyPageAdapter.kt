@@ -8,17 +8,23 @@ import android.support.v4.app.FragmentPagerAdapter
 
 class MyPageAdapter(fm: FragmentManager , val index :Int ): FragmentPagerAdapter(fm){
     override fun getItem( position : Int ): Fragment {
-        val fragment = Fragment01()
-
+        var fragment : Fragment? = null
+        when(position){
+            0-> fragment = Fragment01()
+            1-> fragment = Fragment02()
+            2-> fragment = Fragment03()
+            3-> fragment = Fragment04()
+        }
         val bundle = Bundle()
         bundle.putInt("index",index )
-        fragment.arguments = bundle
 
-        return fragment
+        if( fragment != null )
+            fragment.arguments = bundle
 
+        return fragment!!
     }
 
     override fun getCount() : Int{
-        return 5
+        return 4
     }
 }
