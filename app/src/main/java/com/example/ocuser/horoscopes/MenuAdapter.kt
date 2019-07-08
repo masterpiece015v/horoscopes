@@ -1,6 +1,7 @@
 package com.example.ocuser.horoscopes
 
 import android.content.Context
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ class MenuAdapter(context: Context, val menuList : List<String>, private val onI
         val view = inflater.inflate(R.layout.list_menu,p0,false)
         val viewHolder = MenuViewHolder(view)
 
+
         return viewHolder
     }
 
@@ -22,7 +24,9 @@ class MenuAdapter(context: Context, val menuList : List<String>, private val onI
 
     override fun onBindViewHolder(p0: MenuViewHolder, p1: Int) {
         p0.txtMenuItem.text = menuList[p1]
-
+        if( p1 == 0 ){
+            p0.txtMenuItem.setBackgroundColor(Color.LTGRAY )
+        }
         //ビューがクリックされたとのイベント
         p0.view.setOnClickListener{
             onItemClicked(p1 , it )

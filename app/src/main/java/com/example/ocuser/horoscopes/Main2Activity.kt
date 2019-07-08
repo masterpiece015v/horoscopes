@@ -31,8 +31,10 @@ class Main2Activity : AppCompatActivity() {
         //リサイクラービュー
         val rcyMenu = findViewById<RecyclerView>(R.id.rcyMenu)
 
+        val adList = listOf("総合運","恋愛運","金運","仕事運" , "相性")
+
         //リサイクラービューのアダプタ
-        val adapter = MenuAdapter(this, listOf("総合運","恋愛運","金運","仕事運" , "相性")){index,view->
+        val adapter = MenuAdapter(this,adList ){index,view->
             //メニュークリック時のイベント
             pager.currentItem = index
             view.findViewById<TextView>(R.id.txtMenuItem).setBackgroundColor(Color.LTGRAY)
@@ -40,18 +42,34 @@ class Main2Activity : AppCompatActivity() {
         }
 
         rcyMenu.adapter = adapter
-
         rcyMenu.layoutManager = LinearLayoutManager(this, LinearLayout.HORIZONTAL,false)
+
+        var nowp = 0
 
         //ページャーのページが変わった後のイベント
         pager.addOnPageChangeListener(object: ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(p0: Int) {
-                rcyMenu.smoothScrollToPosition( p0 +1)
-                val viewholder = rcyMenu.findViewHolderForAdapterPosition(p0) as MenuAdapter.MenuViewHolder
-                viewholder.txtMenuItem.setBackgroundColor( Color.MAGENTA )
-                Toast.makeText( applicationContext, viewholder.txtMenuItem.text , Toast.LENGTH_SHORT).show()
+
+                if( p0 >= 0 && p0 < adList.size ) {
+                    if( nowp <= p0) {
+                        rcyMenu.smoothScrollToPosition(p0 + 1)
+                    }else if( p0 > 0 ){
+                        rcyMenu.smoothScrollToPosition( p0 - 1 )
+                    }
+                }
+
+                val viewholder1 = rcyMenu.findViewHolderForAdapterPosition(p0) as MenuAdapter.MenuViewHolder
+                viewholder1.txtMenuItem.setBackgroundColor( Color.LTGRAY )
+
+                val viewholder2 = rcyMenu.findViewHolderForAdapterPosition(nowp) as MenuAdapter.MenuViewHolder
+                viewholder2.txtMenuItem.setBackgroundColor( Color.WHITE )
+
+                nowp = p0
+
+                //Toast.makeText( applicationContext, viewholder.txtMenuItem.text , Toast.LENGTH_SHORT).show()
             }
         })
+
 
     }
 }
