@@ -46,7 +46,7 @@ class Main2Activity : AppCompatActivity() {
         //ページャーのページが変わった後のイベント
         pager.addOnPageChangeListener(object: ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(p0: Int) {
-                rcyMenu.smoothScrollToPosition( p0 )
+                rcyMenu.scrollToPosition( p0 +1)
                 val viewholder = rcyMenu.findViewHolderForAdapterPosition(p0) as MenuAdapter.MenuViewHolder
                 viewholder.txtMenuItem.setBackgroundColor( Color.MAGENTA )
                 Toast.makeText( applicationContext, viewholder.txtMenuItem.text , Toast.LENGTH_SHORT).show()
