@@ -31,7 +31,7 @@ class Main2Activity : AppCompatActivity() {
         //リサイクラービュー
         val rcyMenu = findViewById<RecyclerView>(R.id.rcyMenu)
 
-        val adList = listOf("総合運","恋愛運","金運","仕事運" , "相性")
+        val adList = listOf("総合運","恋愛運","金運","仕事運","恋愛相性1位","恋愛相性12位")
 
         //リサイクラービューのアダプタ
         val adapter = MenuAdapter(this,adList ){index,view->

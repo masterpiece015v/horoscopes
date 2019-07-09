@@ -14,6 +14,8 @@ class MyPageAdapter(fm: FragmentManager , val index :Int ): FragmentPagerAdapter
             1-> fragment = Fragment02()
             2-> fragment = Fragment03()
             3-> fragment = Fragment04()
+            4-> fragment = Fragment05()
+            5-> fragment = Fragment06()
         }
         val bundle = Bundle()
         bundle.putInt("index",index )
@@ -25,6 +27,6 @@ class MyPageAdapter(fm: FragmentManager , val index :Int ): FragmentPagerAdapter
     }
 
     override fun getCount() : Int{
-        return 4
+        return 6
     }
 }

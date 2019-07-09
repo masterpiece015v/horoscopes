@@ -17,7 +17,7 @@ class Fragment04(): Fragment() {
 
         layout.findViewById<TextView>(R.id.txtName4).text = "${MainActivity.astroList[index].name}の仕事運"
         layout.findViewById<TextView>(R.id.txtContent4).text = MainActivity.astroList[index].job
-        layout.findViewById<ImageView>(R.id.imgHoro4).setImageResource( MainActivity.astroList[index].imgName )
+        layout.findViewById<ImageView>(R.id.imgHoro5).setImageResource( MainActivity.astroList[index].imgName )
         return layout
     }
 }

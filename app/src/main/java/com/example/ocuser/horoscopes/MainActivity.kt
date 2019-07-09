@@ -28,6 +28,13 @@ data class AstroFortun(val name : String,
                        var gold : String,
                        var job : String)
 
+data class TalentData(
+        val groupname : String,
+        val name : String,
+        val birthday : String,
+        val imgtalent : Int
+)
+
 class MainActivity : AppCompatActivity(){
 
     companion object{
@@ -57,6 +64,15 @@ class MainActivity : AppCompatActivity(){
         //sqliteの作成
         val dbastro = DbAstro( this )
         dbastro.init()
+        val talentdb = TalentDb( this )
+        talentdb.init()
+
+        //確認
+        //val cur = talentdb.getCursor("select * from talentTable where zodiac=?",arrayOf("おひつじ座"))
+
+        //while( cur.moveToNext() ){
+        //    Log.d("debug", cur.getString(cur.getColumnIndex("name")))
+        //}
 
         //シェアードプリファレンスから年月日を取得
         val pref = getSharedPreferences("date", Context.MODE_PRIVATE)
@@ -118,6 +134,9 @@ class MainActivity : AppCompatActivity(){
                         val spans = document.select("span")
                         astro.compa1 = spans[4].text()
                         astro.compa2 = spans[7].text()
+
+                        Log.d("debug","${astro.name}:${astro.compa1}:${astro.compa2}")
+
                         //恋愛運
                         val yftnmd00 = document.select(".yftn-md00").select("p")
 

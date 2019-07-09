@@ -1,7 +1,6 @@
 package com.example.ocuser.horoscopes
 
 import android.content.Context
-import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +35,7 @@ class AstroAdapter(context: Context, val astroList : List<AstroFortun>,private v
 
     class AstroViewHolder(val view : View):RecyclerView.ViewHolder(view){
         val imgAstor = view.findViewById<ImageView>(R.id.imgAstro)
-        val txtAstroName = view.findViewById<TextView>(R.id.txtAstroName)
+        val txtAstroName = view.findViewById<TextView>(R.id.txtTalentName)
         val txtOverview = view.findViewById<TextView>(R.id.txtOverview)
     }
 }
